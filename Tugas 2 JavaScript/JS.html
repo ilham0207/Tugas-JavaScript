@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Data Pegawai - Rincian Perhitungan</title>
+  <style>
+    body { font-family: 'Times New Roman', Times, serif; background: #f7f7fb; color: #111; padding: 20px; }
+    table {
+      border-collapse: collapse;
+      width: 90%;
+      margin: 12px auto;
+      background: #fff;
+    }
+    th, td {
+      border: 1px solid #333;
+      padding: 8px;
+      text-align: center;
+    }
+    thead { background-color: skyblue; }
+    tfoot { background-color: yellow; font-weight: bold; }
+    .rincian {
+      width: 90%;
+      margin: 18px auto;
+      background: #ffffff;
+      border: 1px solid #ddd;
+      padding: 12px;
+      border-radius: 6px;
+    }
+    pre { background: #f8f9fa; padding: 8px; border-radius: 4px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h2 style="text-align:center;">Data Pegawai</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nama Pegawai</th>
+        <th>Umur</th>
+        <th>Jabatan</th>
+        <th>Status</th>
+        <th>Gaji Pokok</th>
+        <th>Tunjangan Jabatan</th>
+        <th>BPJS</th>
+        <th>Tunjangan Keluarga</th>
+      </tr>
+    </thead>
+
+    <tbody id="dataPegawai"></tbody>
+
+    <tfoot>
+      <!-- colspan 7 (kolom pertama sampai kolom ke-7), cell terakhir untuk total keseluruhan gaji -->
+      <tr>
+        <td colspan="7">Total Gaji (Seluruh Pegawai)</td>
+        <td id="totalGaji"></td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <!-- Di sini akan ditampilkan rincian perhitungan -->
+  <div id="rincianPerhitungan" class="rincian" aria-live="polite"></div>
+
+  <script>
+    /**
+     * Data pegawai (sesuai soal).
+     * - nama, umur, jabatan, status
+     */
+    const pegawai = {
+      nama: "Dodi Prayodi",
+      umur: 25,
+      jabatan: "Manajer",
+      status: "Menikah"
+    };
+
+    /**
+     * Fungsi format rupiah (menampilkan "Rp xx.xxx.xxx")
+     */
+    function formatRupiah(amount) {
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        maximumFractionDigits: 0
+      }).format(amount);
+    }
+
+    
+    function calculateGaji(p) {
+      let gapok = 0;
+      const jab = p.jabatan.toLowerCase();
+
+      // Tetapkan gaji pokok berdasarkan jabatan
+      if (jab === "manajer") {
+        gapok = 15000000;
+      } else if (jab === "asisten manajer" || jab === "asisten") {
+        gapok = 10000000;
+      } else if (jab === "staff") {
+        gapok = 5000000;
+      } else {
+        // default bila jabatan tidak dikenali (bisa disesuaikan)
+        gapok = 0;
+      }
+
+      // Hitungan tunjangan dan potongan berdasarkan persentase dari gapok
+      const tunjanganJabatan = 0.15 * gapok; // 15% dari gapok
+      const bpjs = 0.10 * gapok;             // 10% dari gapok
+      const tunjanganKeluarga = (p.status.toLowerCase() === "menikah") ? 0.20 * gapok : 0; // 20% jika menikah
+
+      // Jumlahkan semua komponen untuk mendapatkan total gaji
+      const total = gapok + tunjanganJabatan + bpjs + tunjanganKeluarga;
+
+      return { gapok, tunjanganJabatan, bpjs, tunjanganKeluarga, total };
+    }
+
+    // Lakukan perhitungan untuk pegawai
+    const hasil = calculateGaji(pegawai);
+
+    // Isi tabel <tbody> dengan data pegawai dan nilai yang sudah dihitung
+    document.getElementById("dataPegawai").innerHTML = `
+      <tr>
+        <td>${pegawai.nama}</td>
+        <td>${pegawai.umur}</td>
+        <td>${pegawai.jabatan}</td>
+        <td>${pegawai.status}</td>
+        <td>${formatRupiah(hasil.gapok)}</td>
+        <td>${formatRupiah(hasil.tunjanganJabatan)}</td>
+        <td>${formatRupiah(hasil.bpjs)}</td>
+        <td>${formatRupiah(hasil.tunjanganKeluarga)}</td>
+      </tr>
+    `;
+
+    // Karena hanya satu pegawai pada contoh ini, total seluruh pegawai = total pegawai ini
+    document.getElementById("totalGaji").textContent = formatRupiah(hasil.total);
+
+    const rincianHtml = `
+      <h3>Rincian Perhitungan</h3>
+      <ol>
+        <li><strong>Gaji Pokok</strong>: ${formatRupiah(hasil.gapok)} (ditetapkan berdasarkan jabatan: <em>${pegawai.jabatan}</em>).</li>
+        <li><strong>Tunjangan Jabatan</strong> (15% × Gaji Pokok): 0.15 × ${formatRupiah(hasil.gapok)} = <strong>${formatRupiah(hasil.tunjanganJabatan)}</strong>.</li>
+        <li><strong>BPJS</strong> (10% × Gaji Pokok): 0.10 × ${formatRupiah(hasil.gapok)} = <strong>${formatRupiah(hasil.bpjs)}</strong>.</li>
+        <li><strong>Tunjangan Keluarga</strong>: ${
+          pegawai.status.toLowerCase() === "menikah"
+            ? `20% × Gaji Pokok = 0.20 × ${formatRupiah(hasil.gapok)} = <strong>${formatRupiah(hasil.tunjanganKeluarga)}</strong>.`
+            : "Tidak mendapatkan tunjangan keluarga karena status bukan 'menikah'."
+        }</li>
+        <li><strong>Total Gaji</strong>: Gaji Pokok + Tunjangan Jabatan + BPJS + Tunjangan Keluarga = <strong>${formatRupiah(hasil.total)}</strong>.</li>
+      </ol>
+
+      
+    `;
+
+    document.getElementById("rincianPerhitungan").innerHTML = rincianHtml;
+  </script>
+</body>
+</html>
