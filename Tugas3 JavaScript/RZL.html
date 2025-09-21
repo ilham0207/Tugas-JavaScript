@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Manajemen Pesanan Toko Online</title>
+  <style>
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      margin: 0;
+      padding: 20px;
+      background: #f4f7fc;
+      color: #333;
+    }
+
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+
+    input, select, button {
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      width: 100%;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+
+    button {
+      background: #3498db;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #2980b9;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 15px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #3498db;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    .aksi button {
+      background: #e74c3c;
+      padding: 5px 10px;
+      border-radius: 6px;
+    }
+
+    .aksi button:hover {
+      background: #c0392b;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>📦 Sistem Manajemen Pesanan Toko Online</h2>
+
+  <!-- Produk -->
+  <div class="container">
+    <h3>Daftar Produk</h3>
+    <div>
+      <input type="text" id="nama" placeholder="Nama Produk">
+      <input type="number" id="harga" placeholder="Harga">
+      <input type="number" id="stok" placeholder="Stok">
+      <button onclick="tambahProduk()">Tambah Produk</button>
+    </div>
+
+    <table id="tabelProduk">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nama</th>
+          <th>Harga</th>
+          <th>Stok</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Pelanggan & Pesanan -->
+  <div class="container">
+    <h3>Form Pemesanan</h3>
+    <input type="text" id="namaPelanggan" placeholder="Nama Pelanggan">
+    <select id="produkPesanan"></select>
+    <input type="number" id="jumlahPesanan" placeholder="Jumlah">
+    <button onclick="buatPesanan()">Buat Pesanan</button>
+
+    <h4>Daftar Pesanan</h4>
+    <table id="tabelPesanan">
+      <thead>
+        <tr>
+          <th>Nama Pelanggan</th>
+          <th>Produk</th>
+          <th>Jumlah</th>
+          <th>Total Harga</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    // Data produk
+    let produkToko = [
+      { id: 1, nama: "Laptop", harga: 7000000, stok: 5 },
+      { id: 2, nama: "Mouse", harga: 200000, stok: 10 },
+      { id: 3, nama: "Keyboard", harga: 350000, stok: 7 }
+    ];
+
+    let pesanan = [];
+
+    // Tampilkan produk di tabel
+    function tampilkanProduk() {
+      const tbody = document.querySelector("#tabelProduk tbody");
+      tbody.innerHTML = "";
+      produkToko.forEach(p => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${p.id}</td>
+          <td>${p.nama}</td>
+          <td>Rp${p.harga.toLocaleString()}</td>
+          <td>${p.stok}</td>
+          <td class="aksi"><button onclick="hapusProduk(${p.id})">Hapus</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+      isiSelectProduk();
+    }
+
+    // Tambah produk
+    function tambahProduk() {
+      const nama = document.getElementById("nama").value;
+      const harga = parseInt(document.getElementById("harga").value);
+      const stok = parseInt(document.getElementById("stok").value);
+
+      if (!nama || isNaN(harga) || isNaN(stok)) {
+        alert("Isi semua field dengan benar!");
+        return;
+      }
+
+      let idBaru = produkToko.length > 0 ? produkToko[produkToko.length - 1].id + 1 : 1;
+      produkToko.push({ id: idBaru, nama, harga, stok });
+
+      document.getElementById("nama").value = "";
+      document.getElementById("harga").value = "";
+      document.getElementById("stok").value = "";
+
+      tampilkanProduk();
+    }
+
+    // Hapus produk
+    function hapusProduk(id) {
+      produkToko = produkToko.filter(p => p.id !== id);
+      tampilkanProduk();
+    }
+
+    // Isi select produk di form pesanan
+    function isiSelectProduk() {
+      const select = document.getElementById("produkPesanan");
+      select.innerHTML = "";
+      produkToko.forEach(p => {
+        let option = document.createElement("option");
+        option.value = p.id;
+        option.textContent = `${p.nama} (Stok: ${p.stok})`;
+        select.appendChild(option);
+      });
+    }
+
+    // Buat pesanan
+    function buatPesanan() {
+      const namaPelanggan = document.getElementById("namaPelanggan").value;
+      const idProduk = parseInt(document.getElementById("produkPesanan").value);
+      const jumlah = parseInt(document.getElementById("jumlahPesanan").value);
+
+      if (!namaPelanggan || isNaN(jumlah) || jumlah <= 0) {
+        alert("Lengkapi data pesanan dengan benar!");
+        return;
+      }
+
+      let produk = produkToko.find(p => p.id === idProduk);
+
+      if (!produk || produk.stok < jumlah) {
+        alert("Stok tidak mencukupi!");
+        return;
+      }
+
+      let total = produk.harga * jumlah;
+      pesanan.push({ namaPelanggan, produk: produk.nama, jumlah, total });
+
+      produk.stok -= jumlah;
+
+      document.getElementById("namaPelanggan").value = "";
+      document.getElementById("jumlahPesanan").value = "";
+
+      tampilkanProduk();
+      tampilkanPesanan();
+    }
+
+    // Tampilkan pesanan
+    function tampilkanPesanan() {
+      const tbody = document.querySelector("#tabelPesanan tbody");
+      tbody.innerHTML = "";
+      pesanan.forEach(p => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${p.namaPelanggan}</td>
+          <td>${p.produk}</td>
+          <td>${p.jumlah}</td>
+          <td>Rp${p.total.toLocaleString()}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Load awal
+    tampilkanProduk();
+    tampilkanPesanan();
+  </script>
+</body>
+</html>
