@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manajemen Data Pengguna</title>
+  <style>
+    /* ==== GLOBAL STYLE ==== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+    }
+    body {
+      background: linear-gradient(120deg, #6a11cb, #2575fc);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #333;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #fff;
+      margin-bottom: 25px;
+      text-shadow: 1px 1px 5px rgba(0,0,0,0.3);
+      font-size: 2.2rem;
+      letter-spacing: 1px;
+      animation: slideDown 0.8s ease;
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-50px); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
+    }
+
+    /* ==== CONTROL BUTTONS ==== */
+    .controls {
+      margin-bottom: 25px;
+      display: flex;
+      gap: 15px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #fff;
+      transition: 0.3s;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+    }
+    .add-btn {
+      background: #28a745;
+    }
+    .add-btn:hover {
+      background: #218838;
+    }
+    .delete-btn {
+      background: #dc3545;
+    }
+    .delete-btn:hover {
+      background: #c82333;
+    }
+
+    /* ==== TABLE STYLE ==== */
+    table {
+      width: 90%;
+      max-width: 900px;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      animation: fadeIn 0.8s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    thead {
+      background: linear-gradient(90deg, #2575fc, #6a11cb);
+      color: #fff;
+    }
+    th, td {
+      padding: 12px 15px;
+      text-align: center;
+      font-size: 1rem;
+    }
+    tbody tr:nth-child(even) {
+      background: #f8f9fa;
+    }
+    tbody tr:hover {
+      background: #e8f0fe;
+      transition: 0.3s;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📋 Manajemen Data Pengguna</h1>
+
+  <div class="controls">
+    <button class="add-btn" onclick="tambahData()">+ Tambah 2 Data</button>
+    <button class="delete-btn" onclick="hapusData()">🗑 Hapus Data Terakhir</button>
+  </div>
+
+  <table id="tabelData">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Nama</th>
+        <th>Umur</th>
+        <th>Alamat</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Data akan diisi oleh JavaScript -->
+    </tbody>
+  </table>
+
+  <script>
+    // ==== DATA AWAL ====
+    const users = [
+      { nama: "Data 1", umur: 20, alamat: "Jl. Data 1", email: "data1@mail.com" },
+      { nama: "Data 2", umur: 21, alamat: "Jl. Data 2", email: "data2@mail.com" },
+      { nama: "Data 3", umur: 22, alamat: "Jl. Data 3", email: "data3@mail.com" },
+      { nama: "Data 4", umur: 23, alamat: "Jl. Data 4", email: "data4@mail.com" },
+      { nama: "Data 5", umur: 24, alamat: "Jl. Data 5", email: "data5@mail.com" },
+      { nama: "Data 6", umur: 25, alamat: "Jl. Data 6", email: "data6@mail.com" },
+      { nama: "Data 7", umur: 26, alamat: "Jl. Data 7", email: "data7@mail.com" },
+      { nama: "Data 8", umur: 27, alamat: "Jl. Data 8", email: "data8@mail.com" },
+      { nama: "Data 9", umur: 28, alamat: "Jl. Data 9", email: "data9@mail.com" },
+      { nama: "Data 10", umur: 29, alamat: "Jl. Data 10", email: "data10@mail.com" }
+    ];
+
+    // ==== FUNGSI TAMPILKAN DATA ====
+    function tampilkanData() {
+      const tbody = document.querySelector("#tabelData tbody");
+      tbody.innerHTML = ""; // kosongkan tabel sebelum render ulang
+
+      users.map((user, index) => {
+        const row = `<tr>
+                      <td>${index + 1}</td>
+                      <td>${user.nama}</td>
+                      <td>${user.umur}</td>
+                      <td>${user.alamat}</td>
+                      <td>${user.email}</td>
+                    </tr>`;
+        tbody.innerHTML += row;
+      });
+    }
+
+    // ==== FUNGSI TAMBAH DATA ====
+    function tambahData() {
+      users.push({ nama: "Data 11", umur: 30, alamat: "Jl. Data 11", email: "data11@mail.com" });
+      users.push({ nama: "Data 12", umur: 31, alamat: "Jl. Data 12", email: "data12@mail.com" });
+      tampilkanData();
+      alert("✅ 2 Data baru berhasil ditambahkan!");
+    }
+
+    // ==== FUNGSI HAPUS DATA ====
+    function hapusData() {
+      if (users.length > 0) {
+        const removed = users.pop(); // hapus data terakhir
+        tampilkanData();
+        alert(`🗑 Data "${removed.nama}" berhasil dihapus!`);
+      } else {
+        alert("⚠ Tidak ada data yang bisa dihapus.");
+      }
+    }
+
+    // ==== TAMPILKAN DATA SAAT HALAMAN DIMUAT ====
+    tampilkanData();
+  </script>
+</body>
+</html>
